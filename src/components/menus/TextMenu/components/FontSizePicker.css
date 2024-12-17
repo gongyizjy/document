@@ -1,0 +1,13 @@
+.ant-dropdown-menu-item-selected {
+  color: #737373 !important;
+  background-color: #e5e5e6 !important;
+  
+}
+
+.font-size-item .check-icon {
+  @apply hidden
+}
+
+.ant-dropdown-menu-item-selected .font-size-item .check-icon {
+  @apply block
+}

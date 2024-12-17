@@ -1,0 +1,5 @@
+.ProseMirror {
+  > blockquote {
+    @apply border-l-4 pl-3 mb-1.5 mt-1.5 border-blockquote text-blockquote-text
+  }
+}

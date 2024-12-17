@@ -1,0 +1,30 @@
+.ant-dropdown-menu-item-selected {
+  color: #737373 !important;
+  background-color: #e5e5e6 !important;
+  
+}
+
+.color-item .check-icon {
+  @apply hidden
+}
+
+.ant-dropdown-menu-item-selected .color-item .check-icon {
+  @apply block
+}
+.custom-color {
+  position: relative;
+  color: transparent;
+}
+.custom-color::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #958DF1, #B9F18D);
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  overflow: hidden;
+}
