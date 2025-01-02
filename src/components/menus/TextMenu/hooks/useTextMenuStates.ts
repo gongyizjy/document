@@ -15,22 +15,27 @@ export const useTextMenuStates = (editor: Editor) => {
         currentSize:
           ctx.editor.getAttributes("textStyle")?.fontSize || undefined,
         currentColor: ctx.editor.getAttributes("textStyle")?.color || undefined,
-        currentAlign: ctx.editor.isActive({ textAlign: 'left' })
-          ? 'left'
-          : ctx.editor.isActive({ textAlign: 'center' })
-          ? 'center'
-          : ctx.editor.isActive({ textAlign: 'right' })
-          ? 'right'
-          : 'left',
+        currentAlign: ctx.editor.isActive({ textAlign: "left" })
+          ? "left"
+          : ctx.editor.isActive({ textAlign: "center" })
+          ? "center"
+          : ctx.editor.isActive({ textAlign: "right" })
+          ? "right"
+          : "left",
+        isHighlight: ctx.editor.isActive("highlight"),
       };
     },
   });
-  const shouldShow = useCallback(({ view }: ShouldShowProps) => {
-    if (!view || editor.view.dragging) {
-      return false;
-    }
-    return isTextSelected({ editor });
-  }, [editor]);
+
+  const shouldShow = useCallback(
+    ({ view }: ShouldShowProps) => {
+      if (!view || editor.view.dragging) {
+        return false;
+      }
+      return isTextSelected({ editor });
+    },
+    [editor]
+  );
   return {
     shouldShow,
     ...states,

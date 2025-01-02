@@ -33,9 +33,15 @@
     p {
       @apply m-0;
     }
-
+    input[type="checkbox"] {
+      @apply cursor-pointer;
+      vertical-align: 1px
+    }
+    input[type="checkbox"]:checked {
+      accent-color: #6A00F5
+    }
     li {
-      @apply flex;
+      @apply flex items-center;
 
       > label {
         @apply grow-0 shrink-0 flex-auto mt-1 mr-2 select-none;

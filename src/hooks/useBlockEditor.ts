@@ -16,6 +16,11 @@ import Color from "@tiptap/extension-color";
 import { ClearStyles } from "@/extensions/ClearStyles";
 import TextAlign from "@tiptap/extension-text-align";
 import { Link } from "@/extensions/Link";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
+import { Document } from "@/extensions/Document";
+import { Columns, Column } from "@/extensions/MultiColumn";
+import Highlight from "@tiptap/extension-highlight";
 
 declare global {
   interface Window {
@@ -29,7 +34,9 @@ export default function useBlockEditor() {
       StarterKit.configure({
         codeBlock: false,
         heading: false,
+        document: false,
       }),
+      Document,
       Placeholder.configure({
         placeholder({ node }) {
           if (node.type.name === "paragraph") {
@@ -59,8 +66,15 @@ export default function useBlockEditor() {
       }),
       Link.configure({
         openOnClick: true,
-        autolink: true,
+        linkOnPaste: true,
       }),
+      TaskList,
+      TaskItem.configure({
+        nested: true
+      }),
+      Columns,
+      Column,
+      Highlight,
     ],
   });
 

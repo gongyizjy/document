@@ -1,0 +1,22 @@
+.ProseMirror {
+  /* Columns */
+  [data-type="columns"] {
+    @apply grid gap-4 mt-14 mb-12;
+
+    &.layout-sidebar-left {
+      grid-template-columns: 40fr 60fr;
+    }
+
+    &.layout-sidebar-right {
+      grid-template-columns: 60fr 40fr;
+    }
+
+    &.layout-two-column {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  [data-type="column"] {
+    @apply overflow-auto;
+  }
+}

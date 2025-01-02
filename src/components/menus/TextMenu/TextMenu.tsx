@@ -6,6 +6,8 @@ import { useTextMenuStates } from "./hooks/useTextMenuStates";
 import FontSizePicker from "./components/FontSizePicker";
 import ColorPicker from "./components/ColorPicker";
 import TextAlign from "./components/TextAlign";
+import EditLinkPopover from "./components/EditLinkPopover";
+import MorePopover from "./components/MorePopover";
 import { memo } from "react";
 
 export type TextMenuProps = {
@@ -37,7 +39,7 @@ export default function TextMenu({ editor }: TextMenuProps) {
             {
               name: "flip",
               options: {
-                fallbackPlacements: ["bottom"],
+                fallbackPlacements: ["top", "bottom"],
               },
             },
           ],
@@ -92,6 +94,14 @@ export default function TextMenu({ editor }: TextMenuProps) {
         >
           <Icon name="CodeXml" />
         </MemoButton>
+        <MemoButton
+          tooltip="高亮"
+          onClick={commands.onHighlight}
+          active={states.isHighlight}
+        >
+          <Icon name="Highlighter" />
+        </MemoButton>
+        <EditLinkPopover onSetLink={commands.onLink} />
         <MemoColorPicker
           onChange={commands.onColor}
           value={states.currentColor || "#000000"}
@@ -101,9 +111,7 @@ export default function TextMenu({ editor }: TextMenuProps) {
           value={states.currentAlign}
         />
         <Toolbar.Divider />
-        <MemoButton tooltip="更多">
-          <Icon name="Ellipsis" />
-        </MemoButton>
+        <MorePopover />
       </Toolbar.Wrapper>
     </BubbleMenu>
   );

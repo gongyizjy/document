@@ -6,6 +6,8 @@ export default {
       colors: {
         'blockquote': "#3d25141f",
         'blockquote-text': "#878685",
+        'input-bg': "#f5f5f5",
+        'highlight': "FAF594"
       },
       borderWidth: {
         3: '3px',
