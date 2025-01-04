@@ -57,7 +57,7 @@
   }
 
   mark {
-    @apply bg-highlight rounded-sm decoration-clone text-inherit py-1 px-0 dark:bg-red-400;
+    @apply bg-highlight rounded-sm decoration-clone text-inherit py-1 px-0 dark:bg-red-400 rounded;
   }
 
   & img {

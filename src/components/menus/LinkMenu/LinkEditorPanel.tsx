@@ -47,7 +47,6 @@ export default function LinkEditorPanel({
     initialOpenInNewTab,
     initialUrl,
   });
-  console.log(state);
   
   const [form] = Form.useForm();
   return (

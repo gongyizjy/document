@@ -2,6 +2,7 @@ import { EditorContent } from "@tiptap/react";
 import useBlockEditor from "./hooks/useBlockEditor";
 import LinkMenu from "@/components/menus/LinkMenu/LinkMenu";
 import TextMenu from "@/components/menus/TextMenu/TextMenu";
+import ContentItemMenu from "./components/menus/ContentItemMenu/ContentItemMenu";
 import { useRef } from "react";
 export default function App() {
   const { editor } = useBlockEditor();
@@ -16,9 +17,10 @@ export default function App() {
 
   return (
     <div ref={menuContainerRef}>
-      <LinkMenu editor={editor} appendTo={menuContainerRef} />
       <EditorContent editor={editor} />
       <TextMenu editor={editor} />
+      <ContentItemMenu editor={editor} />
+      <LinkMenu editor={editor} appendTo={menuContainerRef} />
     </div>
   );
 }

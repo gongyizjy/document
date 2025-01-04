@@ -42,6 +42,8 @@ export const ClearStyles = Extension.create({
                     "textStyle",
                     "code",
                     "highlight",
+                    "subscript",
+                    "superscript",
                   ].includes(markType.name)
                 ) {
                   tr.removeStoredMark(markType);

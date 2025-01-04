@@ -21,6 +21,11 @@ import TaskList from "@tiptap/extension-task-list";
 import { Document } from "@/extensions/Document";
 import { Columns, Column } from "@/extensions/MultiColumn";
 import Highlight from "@tiptap/extension-highlight";
+import Superscript from "@tiptap/extension-superscript";
+import Subscript from "@tiptap/extension-subscript";
+import HorizontalRule from "@/extensions/HorizontalRule/HorizontalRule";
+import { SlashCommand } from "@/extensions/SlashCommand";
+import { Dropcursor } from "@tiptap/extension-dropcursor";
 
 declare global {
   interface Window {
@@ -35,6 +40,8 @@ export default function useBlockEditor() {
         codeBlock: false,
         heading: false,
         document: false,
+        horizontalRule: false,
+        dropcursor: false,
       }),
       Document,
       Placeholder.configure({
@@ -70,11 +77,19 @@ export default function useBlockEditor() {
       }),
       TaskList,
       TaskItem.configure({
-        nested: true
+        nested: true,
       }),
       Columns,
       Column,
-      Highlight,
+      Highlight.configure({ multicolor: true }),
+      Superscript,
+      Subscript,
+      HorizontalRule,
+      SlashCommand,
+      Dropcursor.configure({
+        width: 2,
+        class: "ProseMirror-dropcursor border-black",
+      }),
     ],
   });
 

@@ -23,6 +23,8 @@ export const useTextMenuStates = (editor: Editor) => {
           ? "right"
           : "left",
         isHighlight: ctx.editor.isActive("highlight"),
+        isSubscript: ctx.editor.isActive("subscript"),
+        isSuperscript: ctx.editor.isActive("superscript"),
       };
     },
   });

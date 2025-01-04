@@ -24,7 +24,7 @@ export default function LinkMenu({ editor, appendTo }: MenuProps) {
     },
     [editor]
   );
-  
+
   const handleEdit = useCallback(() => {
     setShowEdit(true);
   }, []);
@@ -44,14 +44,17 @@ export default function LinkMenu({ editor, appendTo }: MenuProps) {
       pluginKey="textMenu"
       updateDelay={0}
       tippyOptions={{
+        placement: "bottom",
         popperOptions: {
+          strategy: "fixed",
           modifiers: [
             {
               name: "flip",
               enabled: true,
               options: {
-                fallbackPlacements: ["bottom"],
-              },
+                fallbackPlacements: ["bottom", "top"],
+                allowedAutoPlacements: ["bottom", "top"]
+              }
             },
             {
               name: "preventOverflow",
@@ -59,8 +62,9 @@ export default function LinkMenu({ editor, appendTo }: MenuProps) {
               options: {
                 boundary: "viewport",
                 padding: 8,
+                altAxis: true
               },
-            }
+            },
           ],
         },
         appendTo: () => appendTo?.current,

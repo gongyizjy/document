@@ -7,7 +7,7 @@ import FontSizePicker from "./components/FontSizePicker";
 import ColorPicker from "./components/ColorPicker";
 import TextAlign from "./components/TextAlign";
 import EditLinkPopover from "./components/EditLinkPopover";
-import MorePopover from "./components/MorePopover";
+import * as Popover from "@radix-ui/react-popover";
 import { memo } from "react";
 
 export type TextMenuProps = {
@@ -27,7 +27,7 @@ export default function TextMenu({ editor }: TextMenuProps) {
     <BubbleMenu
       tippyOptions={{
         popperOptions: {
-          placement: "top-start",
+          placement: "bottom",
           modifiers: [
             {
               name: "preventOverflow",
@@ -111,7 +111,35 @@ export default function TextMenu({ editor }: TextMenuProps) {
           value={states.currentAlign}
         />
         <Toolbar.Divider />
-        <MorePopover />
+        <Popover.Root>
+          <Popover.Trigger asChild>
+            <Toolbar.Button tooltip="更多">
+              <Icon name="Ellipsis" />
+            </Toolbar.Button>
+          </Popover.Trigger>
+          <Popover.Content className="mt-2">
+            <Toolbar.Wrapper>
+              <MemoButton
+                tooltip="下标"
+                onClick={commands.onSubscript}
+                active={states.isSubscript}
+              >
+                <Icon name="Subscript" />
+              </MemoButton>
+              <MemoButton
+                tooltip="上标"
+                onClick={commands.onSuperscript}
+                active={states.isSuperscript}
+              >
+                <Icon name="Superscript" />
+              </MemoButton>
+              <Toolbar.Divider />
+              <MemoButton tooltip="删除" onClick={commands.onDelete}>
+                <Icon name="Trash2" className="text-red-600" />
+              </MemoButton>
+            </Toolbar.Wrapper>
+          </Popover.Content>
+        </Popover.Root>
       </Toolbar.Wrapper>
     </BubbleMenu>
   );

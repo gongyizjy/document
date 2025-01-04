@@ -56,6 +56,18 @@ export const useTextMenuCommands = (editor: Editor) => {
     () => editor.chain().focus().toggleHighlight().run(),
     [editor]
   );
+  const onSubscript = useCallback(
+    () => editor.chain().focus().toggleSubscript().run(),
+    [editor]
+  );
+  const onSuperscript = useCallback(
+    () => editor.chain().focus().toggleSuperscript().run(),
+    [editor]
+  );
+  const onDelete = useCallback(
+    () => editor.commands.deleteNode("paragraph"),
+    [editor]
+  );
 
   return {
     onBold,
@@ -69,5 +81,8 @@ export const useTextMenuCommands = (editor: Editor) => {
     onTextAlign,
     onLink,
     onHighlight,
+    onSubscript,
+    onSuperscript,
+    onDelete,
   };
 };
