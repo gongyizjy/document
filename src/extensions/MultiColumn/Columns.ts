@@ -26,20 +26,52 @@ export const Columns = Node.create({
 
   isolating: true,
 
+  addAttributes() {
+    return {
+      layout: {
+        default: ColumnLayout.TwoColumn,
+      },
+    };
+  },
+
   addCommands() {
     return {
       setColumns:
         () =>
         ({ commands }) =>
-          commands.insertContent(
-            `<div data-type="columns"><div data-type="column" data-position="left"><p></p></div><div data-type="column" data-position="right"><p></p></div></div>`
-          ),
+          commands.insertContent([
+            {
+              type: "columns",
+              attrs: { layout: ColumnLayout.TwoColumn },
+              content: [
+                {
+                  type: "column",
+                  attrs: { position: "left" },
+                  content: [{ type: "paragraph",content:[
+                    {
+                      type: "text",
+                      text: " "
+                    }
+                  ] }],
+                },
+                {
+                  type: "column",
+                  attrs: { position: "right" },
+                  content: [{ type: "paragraph" }],
+                },
+              ],
+            },
+            {
+              type: "paragraph",
+            },
+          ]),
       setLayout:
         (layout: ColumnLayout) =>
         ({ commands }) =>
           commands.updateAttributes("columns", { layout }),
     };
   },
+
   renderHTML({ HTMLAttributes }) {
     return [
       "div",
@@ -47,6 +79,7 @@ export const Columns = Node.create({
       0,
     ];
   },
+
   parseHTML() {
     return [
       {

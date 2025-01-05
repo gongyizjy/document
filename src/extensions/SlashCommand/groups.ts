@@ -126,7 +126,7 @@ export const GROUPS: Group[] = [
             .chain()
             .focus()
             .setColumns()
-            .focus(editor.state.selection.head - 1)
+            .focus(editor.state.selection.head - 2)
             .run();
         },
       },

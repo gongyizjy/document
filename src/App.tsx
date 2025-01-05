@@ -3,6 +3,7 @@ import useBlockEditor from "./hooks/useBlockEditor";
 import LinkMenu from "@/components/menus/LinkMenu/LinkMenu";
 import TextMenu from "@/components/menus/TextMenu/TextMenu";
 import ContentItemMenu from "./components/menus/ContentItemMenu/ContentItemMenu";
+import ColumnMenu  from "@/extensions/MultiColumn/menu/ColumnsMenu";
 import { useRef } from "react";
 export default function App() {
   const { editor } = useBlockEditor();
@@ -20,6 +21,7 @@ export default function App() {
       <EditorContent editor={editor} />
       <TextMenu editor={editor} />
       <ContentItemMenu editor={editor} />
+      <ColumnMenu editor={editor} appendTo={menuContainerRef} />
       <LinkMenu editor={editor} appendTo={menuContainerRef} />
     </div>
   );
