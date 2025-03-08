@@ -1,0 +1,38 @@
+import { message } from "antd";
+import axios from "axios";
+
+const instance = axios.create({
+  baseURL: "http://localhost:5001/",
+  withCredentials: true
+});
+
+// 请求拦截器
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+instance.interceptors.response.use(
+  (response) => {
+    if (response.headers.Authentication) {
+      localStorage.setItem("token", response.headers.authentication);
+    }
+    const res = response.data;
+    return res;
+  },
+  (error) => {
+    if (error.response.data.msg) {
+      message.error(error.response.data.msg);
+    }
+    return Promise.reject(error.response);
+  }
+);
+export default instance;

@@ -12,7 +12,6 @@ import Underline from "@tiptap/extension-underline";
 import TextStyle from "@tiptap/extension-text-style";
 import FontSize from "@/extensions/FontSize/FontSize";
 import Color from "@tiptap/extension-color";
-// import { ClearStylesOnEnter } from "@/extensions/clearStyle";
 import { ClearStyles } from "@/extensions/ClearStyles";
 import TextAlign from "@tiptap/extension-text-align";
 import { Link } from "@/extensions/Link";
@@ -26,15 +25,19 @@ import Subscript from "@tiptap/extension-subscript";
 import HorizontalRule from "@/extensions/HorizontalRule/HorizontalRule";
 import { SlashCommand } from "@/extensions/SlashCommand";
 import { Dropcursor } from "@tiptap/extension-dropcursor";
+import Collaboration from "@tiptap/extension-collaboration";
+import * as Y from "yjs";
 
 declare global {
   interface Window {
     editor: Editor | null;
   }
 }
+const doc = new Y.Doc();
+const docHeader = doc.get('header', Y.XmlFragment)
+const docContent = doc.get('default', Y.XmlFragment)
 export default function useBlockEditor() {
   const editor = useEditor({
-    content: "",
     extensions: [
       StarterKit.configure({
         codeBlock: false,
@@ -42,6 +45,7 @@ export default function useBlockEditor() {
         document: false,
         horizontalRule: false,
         dropcursor: false,
+        history: false
       }),
       Document,
       Placeholder.configure({
@@ -90,8 +94,12 @@ export default function useBlockEditor() {
         width: 2,
         class: "ProseMirror-dropcursor border-black",
       }),
+      Collaboration.configure({
+        document: doc,
+
+      }),
     ],
   });
 
-  return { editor };
+  return { editor, doc, docHeader, docContent };
 }
