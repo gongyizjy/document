@@ -7,5 +7,5 @@ export interface RegisterData {
   avatar?: string;
 }
 export default async function register(data: RegisterData) {
-  return await instance.post("/user/register", data);
+  return await instance.post("/api/user/register", data);
 }
