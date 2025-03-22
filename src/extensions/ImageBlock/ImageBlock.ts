@@ -71,10 +71,15 @@ export const ImageBlock = Image.extend({
       setImageBlock:
         (attrs) =>
         ({ commands }) => {
-          return commands.insertContent({
-            type: "imageBlock",
-            attrs: { src: attrs.src },
-          });
+          return commands.insertContent([
+            {
+              type: "imageBlock",
+              attrs: { src: attrs.src },
+            },
+            {
+              type: "paragraph",
+            },
+          ]);
         },
       setImageBlockAlign:
         (align) =>
