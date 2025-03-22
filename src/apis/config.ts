@@ -2,14 +2,16 @@ import { message } from "antd";
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:5001/",
+  baseURL: "http://localhost:5001",
   withCredentials: true
 });
 
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
+    console.log("请求拦截器");
     const token = localStorage.getItem("token");
+    console.log("token", token);
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -22,8 +24,8 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    if (response.headers.Authentication) {
-      localStorage.setItem("token", response.headers.authentication);
+    if (response.headers.authorization) {
+      localStorage.setItem("token", response.headers.authorization);
     }
     const res = response.data;
     return res;
