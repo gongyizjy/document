@@ -2,6 +2,21 @@ import { Group } from "./types";
 
 export const GROUPS: Group[] = [
   {
+    name: "ai",
+    title: "AI",
+    commands: [
+      {
+        name: "ai",
+        label: "AI写作",
+        iconName: "Sparkles",
+        description: "AI",
+        action: (editor) => {
+          editor.chain().focus().setAI().run();
+        },
+      },
+    ],
+  },
+  {
     name: "basic",
     title: "基础",
     commands: [
@@ -104,16 +119,16 @@ export const GROUPS: Group[] = [
             .run();
         },
       },
-      // {
-      //   name: 'image',
-      //   label: '图片',
-      //   iconName: 'Image',
-      //   description: 'Insert an image',
-      //   aliases: ['img'],
-      //   action: editor => {
-      //     editor.chain().focus().setImageUpload().run()
-      //   },
-      // },
+      {
+        name: "image",
+        label: "图片",
+        iconName: "Image",
+        description: "Insert an image",
+        aliases: ["img"],
+        action: (editor) => {
+          editor.chain().focus().setImageUpload().run();
+        },
+      },
       {
         name: "columns",
         label: "分栏",
@@ -128,6 +143,17 @@ export const GROUPS: Group[] = [
             .setColumns()
             .focus(editor.state.selection.head - 2)
             .run();
+        },
+      },
+      {
+        name: "toc",
+        label: "目录",
+        iconName: "Book",
+        aliases: ["outline"],
+        description: "Insert a table of contents",
+        shouldBeHidden: (editor) => editor.isActive("columns"),
+        action: (editor) => {
+          editor.chain().focus().insertTableOfContents().run();
         },
       },
       {
