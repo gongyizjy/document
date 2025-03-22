@@ -50,6 +50,7 @@ export default function TextMenu({ editor }: TextMenuProps) {
       }}
       editor={editor}
       pluginKey="textMenu"
+      shouldShow={states.shouldShow}
     >
       <Toolbar.Wrapper>
         <Toolbar.Button>123123132132</Toolbar.Button>
