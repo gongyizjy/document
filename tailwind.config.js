@@ -1,22 +1,26 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./src/*.{js,ts,jsx,tsx}','./src/**/*.{js,ts,jsx,tsx}'],
+  content: ["./src/*.{js,ts,jsx,tsx}", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
-        'blockquote': "#3d25141f",
-        'blockquote-text': "#878685",
-        'input-bg': "#f5f5f5",
-        'highlight': "FAF594",
-        "icon": "#8c8c8c"
+        blockquote: "#3d25141f",
+        "blockquote-text": "#878685",
+        "input-bg": "#f5f5f5",
+        highlight: "FAF594",
+        icon: "#8c8c8c",
+        "side-icon": "#646a73",
+        "text-side-icon-active": "#4752e6",
+        addFile: "#5083fb",
+        clouldUpload: "#ed6d0c",
+        "think-text": "#8b8b8b",
       },
       borderWidth: {
-        2: '2px',
-        3: '3px',
-        4: '4px',
-      }
+        2: "2px",
+        3: "3px",
+        4: "4px",
+      },
     },
   },
   plugins: [],
-}
-
+};
