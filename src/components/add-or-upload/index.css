@@ -1,0 +1,17 @@
+.add-or-upload {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 294px;
+  min-width: 129px;
+  height: 64px;
+  padding: 0px 8px 0px 16px;
+  border: 1px solid #bebfc2;
+  border-radius: 8px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.add-or-upload:hover {
+  background-color: #f3f3f3;
+}
