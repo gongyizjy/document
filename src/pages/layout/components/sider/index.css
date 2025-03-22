@@ -1,0 +1,37 @@
+.side-nav-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-nav-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 10px;
+  height: 36px;
+  line-height: 36px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.side-nav-item:hover {
+  background-color: #e4e6e7;
+}
+
+.selected {
+  color: #1456f0;
+  background-color: #d3def6;
+}
+
+.selected:hover {
+  color: #1456f0;
+  background-color: #d3def6;
+}
+
+
+
+
+a:hover {
+  @apply text-side-icon;
+}

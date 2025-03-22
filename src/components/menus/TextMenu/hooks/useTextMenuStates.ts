@@ -2,6 +2,7 @@ import isTextSelected from "@/utils/isTextSelected";
 import { Editor, useEditorState } from "@tiptap/react";
 import { useCallback } from "react";
 import { ShouldShowProps } from "../../types";
+import isCustomNodeSelected from "@/utils/isCustomNodeSelected";
 export const useTextMenuStates = (editor: Editor) => {
   const states = useEditorState({
     editor,
@@ -30,14 +31,24 @@ export const useTextMenuStates = (editor: Editor) => {
   });
 
   const shouldShow = useCallback(
-    ({ view }: ShouldShowProps) => {
+    ({ view, from }: ShouldShowProps) => {
       if (!view || editor.view.dragging) {
         return false;
       }
+
+      const domAtPos = view.domAtPos(from || 0).node as HTMLElement;
+      const nodeDOM = view.nodeDOM(from || 0) as HTMLElement;
+      const node = nodeDOM || domAtPos;
+
+      if (isCustomNodeSelected(editor, node)) {
+        return false;
+      }
+
       return isTextSelected({ editor });
     },
     [editor]
   );
+
   return {
     shouldShow,
     ...states,

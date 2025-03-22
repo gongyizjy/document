@@ -1,0 +1,95 @@
+.ant-tree {
+  width: 100% !important;
+}
+
+.ant-tree-list-holder-inner {
+  background-color: #f5f6f7 !important;
+}
+
+/* 覆盖antd中默认样式 */
+.ant-tree-list .ant-tree-treenode {
+  width: 100%;
+  height: 36px !important;
+  margin-bottom: 0 !important;
+  align-items: center !important;
+  background-color: #f5f6f7;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ant-tree-treenode:hover {
+  background-color: #e4e6e7 !important;
+}
+
+.ant-tree-node-content-wrapper {
+  flex: 1;
+  height: 100%;
+}
+
+.ant-tree-treenode-selected {
+  background-color: #d3def6 !important;
+}
+
+.ant-tree-node-content-wrapper:hover {
+  background-color: transparent !important;
+}
+
+.ant-tree-node-selected {
+  background: transparent !important;
+}
+
+.ant-tree-switcher {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ant-tree-switcher::before {
+  top: 50% !important;
+  transform: translateY(-50%);
+}
+
+.tree-item {
+  display: flex;
+  height: 100%;
+  line-height: 36px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tree-item-emoji {
+  margin-left: -10px;
+  margin-right: 5px;
+  font-size: 16px;
+}
+
+.tree-item-action {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 2px;
+  margin-left: 10px;
+  box-sizing: border-box;
+  color: #646a73;;
+  /* background: #1f23291a; */
+}
+
+.tree-item-title {
+  display: flex;
+  align-items: center;
+}
+
+.tree-item-toolbar {
+  display: flex;
+  align-items: center;
+}
+
+.tree-item-action:hover {
+  background: #1f23291a;
+}

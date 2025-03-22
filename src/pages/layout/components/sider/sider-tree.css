@@ -1,0 +1,58 @@
+.sider-tree-container {
+}
+
+.sider-tree-title {
+  display: flex;
+  padding: 8px 4px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@keyframes up {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(90deg);
+  }
+}
+
+@keyframes down {
+  0% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.collapse-btn {
+  display: flex;
+  flex: 1;
+  font-size: 12px;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.collapse-btn > span {
+  padding: 0 4px;
+  display: flex;
+}
+
+.collapse-btn > span:hover {
+  background-color: rgba(31, 35, 41, 0.08);
+  border-radius: 4px;
+}
+
+.collapse-title {
+  margin-right: 5px;
+  user-select: none;
+}
+
+.collapse-icon.up {
+  animation: up 0.3s linear forwards;
+}
+
+.collapse-icon.down {
+  animation: down 0.3s linear forwards;
+}

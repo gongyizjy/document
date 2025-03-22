@@ -1,0 +1,12 @@
+.layout-container {
+  height: 100%;
+}
+
+.layout-sider {
+  padding: 0 10px !important;
+  background-color: #f5f6f7;
+}
+
+.layout-content {
+  padding: 20px !important;
+}
