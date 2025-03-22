@@ -25,10 +25,14 @@ import {
   HorizontalRule,
   SlashCommand,
   Table,
+  TableOfContents,
   TableRow,
   TableHeader,
   TableCell,
   FontSize,
+  TableOfContentsNode,
+  TrailingNode,
+  Figcaption
 } from "@/extensions";
 
 export const extensionsKit = () => [
@@ -53,12 +57,6 @@ export const extensionsKit = () => [
     levels: [1, 2, 3, 4, 5, 6],
   }),
   Typography,
-  Table.configure({
-    resizable: true,
-  }),
-  TableRow,
-  TableHeader,
-  TableCell,
   Underline,
   TextStyle,
   FontSize,
@@ -86,4 +84,12 @@ export const extensionsKit = () => [
     width: 2,
     class: "ProseMirror-dropcursor border-black",
   }),
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+  TableOfContents,
+  TableOfContentsNode,
+  TrailingNode,
+  Figcaption
 ];

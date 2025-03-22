@@ -11,12 +11,9 @@ export { BulletList } from "@tiptap/extension-bullet-list";
 export { OrderedList } from "@tiptap/extension-ordered-list";
 export { TaskItem } from "@tiptap/extension-task-item";
 export { TaskList } from "@tiptap/extension-task-list";
-export { Table } from "@tiptap/extension-table";
-export { TableCell } from "@tiptap/extension-table-cell";
-export { TableHeader } from "@tiptap/extension-table-header";
-export { TableRow } from "@tiptap/extension-table-row";
 export { Underline } from "@tiptap/extension-underline";
-export {Color} from "@tiptap/extension-color";
+export { Color } from "@tiptap/extension-color";
+export { TableOfContents } from "@tiptap-pro/extension-table-of-contents";
 
 export { Heading } from "./Heading";
 export { HorizontalRule } from "./HorizontalRule";
@@ -27,3 +24,10 @@ export { Columns, Column } from "./MultiColumn";
 export { Link } from "./Link";
 export { SlashCommand } from "./SlashCommand";
 export { ClearStyles } from "./ClearStyles";
+export { ImageUpload } from "./ImageUpload";
+export { ImageBlock } from "./ImageBlock";
+export { Table, TableCell, TableHeader, TableRow } from './Table'
+export { TableOfContentsNode } from "./TableOfContentsNode";
+export { TrailingNode } from './TrailingNode'
+export { Figcaption } from './Figcaption'
+export { AI } from './AI'

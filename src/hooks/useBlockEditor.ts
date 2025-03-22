@@ -4,10 +4,6 @@ import Placeholder from "@tiptap/extension-placeholder";
 import { CodeBlock } from "@/extensions/CodeBlock/CodeBlock";
 import Heading from "@/extensions/Heading/Heading";
 import Typography from "@tiptap/extension-typography";
-import Table from "@tiptap/extension-table";
-import TableCell from "@tiptap/extension-table-cell";
-import TableHeader from "@tiptap/extension-table-header";
-import TableRow from "@tiptap/extension-table-row";
 import Underline from "@tiptap/extension-underline";
 import TextStyle from "@tiptap/extension-text-style";
 import FontSize from "@/extensions/FontSize/FontSize";
@@ -26,6 +22,12 @@ import HorizontalRule from "@/extensions/HorizontalRule/HorizontalRule";
 import { SlashCommand } from "@/extensions/SlashCommand";
 import { Dropcursor } from "@tiptap/extension-dropcursor";
 import Collaboration from "@tiptap/extension-collaboration";
+import { ImageUpload } from "@/extensions/ImageUpload";
+import { ImageBlock } from "@/extensions/ImageBlock";
+import { TableOfContents } from "@tiptap-pro/extension-table-of-contents";
+import { Table, TableRow, TableHeader, TableCell } from "@/extensions/Table";
+import { AI } from "@/extensions/AI/AI";
+import { TableOfContentsNode } from "@/extensions/TableOfContentsNode";
 import * as Y from "yjs";
 
 declare global {
@@ -34,8 +36,8 @@ declare global {
   }
 }
 const doc = new Y.Doc();
-const docHeader = doc.get('header', Y.XmlFragment)
-const docContent = doc.get('default', Y.XmlFragment)
+const docHeader = doc.get("header", Y.XmlFragment);
+const docContent = doc.get("default", Y.XmlFragment);
 export default function useBlockEditor() {
   const editor = useEditor({
     extensions: [
@@ -45,7 +47,7 @@ export default function useBlockEditor() {
         document: false,
         horizontalRule: false,
         dropcursor: false,
-        history: false
+        history: false,
       }),
       Document,
       Placeholder.configure({
@@ -96,8 +98,14 @@ export default function useBlockEditor() {
       }),
       Collaboration.configure({
         document: doc,
-
       }),
+      ImageUpload,
+      ImageBlock,
+      AI.configure({
+        apiKey: import.meta.env.VITE_DEEPSEEK_API_KEY,
+      }),
+      TableOfContents,
+      TableOfContentsNode,
     ],
   });
 
