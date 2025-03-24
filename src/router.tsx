@@ -5,6 +5,7 @@ import Register from "@/pages/auth/register";
 import Layout from "./pages/layout";
 import Home from "./pages/home";
 import Knowledge from "./pages/knowledge";
+import DocEditor from "./pages/editor";
 
 const routes: RouteObject[] = [
   {
@@ -38,6 +39,16 @@ const routes: RouteObject[] = [
       {
         path: "register",
         element: <Register />,
+      },
+    ],
+  },
+  {
+    path: "docs/:blockId",
+    element: <Layout />,
+    children: [
+      {
+        path: "",
+        element: <DocEditor />,
       },
     ],
   },

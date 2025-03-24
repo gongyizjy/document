@@ -5,7 +5,6 @@ import Side from "./components/sider";
 import "./index.css";
 
 const Layout: React.FC = () => {
-
   return (
     <Splitter>
       <Splitter.Panel

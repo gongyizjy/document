@@ -1,1 +1,1 @@
-export { AI } from "./AI";
+export * from "./AI";

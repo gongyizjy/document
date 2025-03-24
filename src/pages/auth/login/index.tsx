@@ -28,7 +28,7 @@ function Login() {
         email: res.data.email,
       });
 
-      navigate("/");
+      navigate("/docs/f2c3fbc5-45bf-49b6-88eb-6a2449d1e247");
     },
     onError: () => {
       getCaptcha();
