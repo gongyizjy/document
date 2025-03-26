@@ -27,19 +27,28 @@ export default function TextMenu({ editor }: TextMenuProps) {
     <BubbleMenu
       tippyOptions={{
         popperOptions: {
-          placement: "bottom",
+          placement: "bottom-start",
           modifiers: [
             {
               name: "preventOverflow",
               options: {
                 boundary: "viewport",
                 padding: 8,
+                mainAxis: true,
+                altAxis: true,
               },
             },
             {
               name: "flip",
               options: {
-                fallbackPlacements: ["top", "bottom"],
+                fallbackPlacements: ["top-start", "right-start"],
+                padding: 8,
+              },
+            },
+            {
+              name: "offset",
+              options: {
+                offset: [0, 8],
               },
             },
           ],
@@ -53,8 +62,6 @@ export default function TextMenu({ editor }: TextMenuProps) {
       shouldShow={states.shouldShow}
     >
       <Toolbar.Wrapper>
-        <Toolbar.Button>123123132132</Toolbar.Button>
-        <Toolbar.Divider />
         <MemoFontSizePicker
           onChange={commands.onSetFontSize}
           value={states.currentSize || "16px"}

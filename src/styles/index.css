@@ -7,7 +7,7 @@
 @import "./partials/table";
 @import "./partials/blocks";
 .ProseMirror {
-  @apply caret-black outline-0 pr-8 pl-20 py-16 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-5xl;
+  @apply caret-black outline-0 pr-8 pl-20 py-16 z-0 lg:pl-8 lg:pr-8 mx-auto max-w-3xl;
 
   .selection {
     @apply inline;

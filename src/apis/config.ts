@@ -3,15 +3,13 @@ import axios from "axios";
 
 const instance = axios.create({
   baseURL: "http://localhost:5001",
-  withCredentials: true
+  withCredentials: true,
 });
 
 // 请求拦截器
 instance.interceptors.request.use(
   (config) => {
-    console.log("请求拦截器");
     const token = localStorage.getItem("token");
-    console.log("token", token);
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

@@ -14,13 +14,10 @@ export interface EditorInfoProps {
 }
 
 export const EditorInfo = memo(
-  ({ characters, words, users, collabState }: EditorInfoProps) => {
+  ({ characters, users, collabState }: EditorInfoProps) => {
     return (
       <div className="flex items-center">
         <div className="flex flex-col justify-center pr-4 mr-4 text-right border-r border-neutral-200 dark:border-neutral-800">
-          <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
-            {words} 字
-          </div>
           <div className="text-xs font-semibold text-neutral-500 dark:text-neutral-400">
             {characters} 字符
           </div>

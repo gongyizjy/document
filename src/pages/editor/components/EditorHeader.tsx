@@ -24,7 +24,6 @@ function EditorHeader({
 }: EditorHeaderProps) {
   // const [isEditable, setIsEditable] = useState(true);
 
-  // 查看权限，如果没有编辑权限，不让编辑器能写入
   const { characters, words } = useEditorState({
     editor,
     selector: (ctx) => {
@@ -49,12 +48,32 @@ function EditorHeader({
           </Toolbar.Button>
         </div>
       </div>
-      <EditorInfo
-        characters={characters}
-        words={words}
-        collabState={collabState}
-        users={users}
-      />
+      <div className="flex gap-x-3 items-center">
+        <Toolbar.Button
+          tooltip="撤销"
+          disabled={!editor.can().undo()}
+          onClick={() => {
+            editor.chain().focus().undo().run();
+          }}
+        >
+          <Icon name="Undo" />
+        </Toolbar.Button>
+        <Toolbar.Button
+          tooltip="重做"
+          disabled={!editor.can().redo()}
+          onClick={() => {
+            editor.chain().focus().redo().run();
+          }}
+        >
+          <Icon name="Redo" />
+        </Toolbar.Button>
+        <EditorInfo
+          characters={characters}
+          words={words}
+          collabState={collabState}
+          users={users}
+        />
+      </div>
     </div>
   );
 }

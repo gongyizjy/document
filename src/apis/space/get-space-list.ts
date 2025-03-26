@@ -16,6 +16,7 @@ export interface TreeItemData {
   accessLevel: "read" | "write" | "admin";
   type: number;
   parentId?: string;
+  isLeaf?: boolean;
 }
 
 export default async function getSpaceList(): Promise<
