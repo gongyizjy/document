@@ -1,5 +1,5 @@
-import React from "react";
-import { Popover, Divider } from "antd";
+import { ReactNode, useState } from "react";
+import { Popover, Divider, message } from "antd";
 import { TreeItemData } from "@/apis";
 import { Icon } from "@/components/ui/Icon";
 import { useDocListStore } from "@/store";
@@ -7,7 +7,7 @@ import "./index.css";
 
 interface DocMenuProps {
   node: TreeItemData;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 type SupportedIcons =
   | "ExternalLink"
@@ -34,25 +34,45 @@ const menuList: MenuItem[] = [
 ];
 
 function DocMenu({ node, children }: DocMenuProps) {
+  const [open, setOpen] = useState(false);
   const { deleteDoc } = useDocListStore();
   const delDoc = (node: TreeItemData) => {
     // 删除文档
     deleteDoc(node.blockId);
   };
+  const openNewTab = (node: TreeItemData) => {
+    const baseUrl = window.location.origin;
+    window.open(`${baseUrl}/docs/${node.blockId}`, "_blank");
+  };
+
+  const copyLink = (node: TreeItemData) => {
+    const baseUrl = window.location.origin;
+    const url = `${baseUrl}/docs/${node.blockId}`;
+    navigator.clipboard.writeText(url);
+    message.success("复制成功");
+  };
   // 同一处理点击事件
-  // const handleClick = (id: string) => {
-  //   switch (id) {
-  //     case "ExternalLink":
-  //       break;
-  //     case "Link":
-  //       break;
-  //     case "PenLine":
-  //       break;
-  //     case "Forward":
-  //       break;
-  //     case "Star":
-  //   }
-  // };
+  const handleClick = (id: string, node: TreeItemData) => {
+    setOpen(false);
+    switch (id) {
+      case "ExternalLink":
+        openNewTab(node);
+        break;
+      case "Link":
+        copyLink(node);
+        break;
+      case "PenLine":
+        break;
+      case "Forward":
+        break;
+      case "Star":
+        break;
+      case "Pin":
+        break;
+      default:
+        break;
+    }
+  };
 
   const content = (
     <div className="flex flex-col gap-2 w-[160px] p-1">
@@ -62,6 +82,7 @@ function DocMenu({ node, children }: DocMenuProps) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
+            handleClick(item.id, node);
           }}
           className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:bg-slate-100 rounded-md"
         >
@@ -91,6 +112,8 @@ function DocMenu({ node, children }: DocMenuProps) {
       content={content}
       trigger="click"
       placement="bottom"
+      open={open}
+      onOpenChange={(visible) => setOpen(visible)}
     >
       {children}
     </Popover>
