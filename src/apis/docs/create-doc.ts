@@ -13,6 +13,5 @@ export interface CreateDocData {
 export default async function createDoc(
   data: CreateDocData
 ): Promise<Response<TreeItemData>> {
-  const res = await instance.post("/api/doc", data);
-  return res.data;
+  return instance.post("/api/doc", data);
 }
