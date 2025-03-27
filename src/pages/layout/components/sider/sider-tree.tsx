@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { message, Tooltip, Tree } from "antd";
 import classNames from "classnames";
 import { v4 as uuid } from "uuid";
-import { produce } from "immer";
 import { useNavigate } from "react-router-dom";
 import {
   RightOutlined,
@@ -15,7 +14,8 @@ import {
   createDoc,
   TreeItemData,
 } from "@/apis";
-import { useDocLib } from "@/store";
+import { useDocLib, useDocListStore } from "@/store";
+import { DocMenu } from "@/containers";
 import "./sider-tree.css";
 
 interface SiderTreeProps {
@@ -24,40 +24,12 @@ interface SiderTreeProps {
   treeData: TreeItemData[];
 }
 function SiderTree({ title, treeData, type }: SiderTreeProps) {
+  const { updateDocList, createRootDoc } = useDocListStore();
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
-  const [list, setList] = useState<TreeItemData[]>([]);
   const [collapse, setCollapse] = useState(false);
   const navigate = useNavigate();
   const { docLibId } = useDocLib();
-  const processTreeData = (data: TreeItemData[]) => {
-    return data.map((node) => ({
-      ...node, // 保留原有所有属性
-      isLeaf: !node.hasChildren, // hasChildren 为 false 时设置为叶子节点
-    }));
-  };
-  const initiakProcessedData = useMemo(() => {
-    return processTreeData(treeData || []);
-  }, [treeData]);
-
-  // 更新树结构
-  const updateTreeData = (
-    list: TreeItemData[],
-    key: string,
-    children: TreeItemData[]
-  ): TreeItemData[] =>
-    produce(list, (draft: TreeItemData[]) => {
-      const traverse = (nodes: TreeItemData[]) => {
-        for (const node of nodes) {
-          if (node.key === key) {
-            node.children = children;
-            return;
-          }
-          if (node.children) traverse(node.children);
-        }
-      };
-      traverse(draft);
-    });
-
+  
   const onLoadData = async (node: TreeItemData) => {
     // 如果存在数据的话
     if (node.children && node.children.length > 0) {
@@ -66,69 +38,65 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
     if (!node.hasChildren) return;
     // 这个是子节点的数据
     const { data } = await getChildDocs(node.blockId);
-    const processedChildren = data.map((child) => ({
-      ...child,
-      isLeaf: !child.hasChildren,
-    }));
-    setList((prev) => updateTreeData(prev, node.blockId, processedChildren));
+    updateDocList(data, node);
   };
 
-  const handleTypePlus = () => {
+  const handleTypePlus = async () => {
     if (type === "docs") {
       // 说明当前是我的文档库
-      createDoc({
-        spaceId: docLibId,
-        blockId: uuid(),
-        title: "未命名的文档",
-      }).then(() => {
-        message.success("创建成功");
-      });
+      createRootDoc(docLibId)
     }
   };
 
-  const handleCreateDoc = async (node: TreeItemData) => {
-    await createDoc({
-      spaceId: node.spaceId,
-      blockId: uuid(),
-      title: "未命名的文档",
-      parentId: node.blockId,
-    });
-    message.success("创建成功");
-    setExpandedKeys((prev) => [...prev, node.key]);
-  };
-
-  const titleRender = useMemo(
-    () => (node: TreeItemData) => {
-      return (
-        <div className="tree-item">
-          <div className="tree-item-title">
-            <div className="emoji">{node.emoji}</div>
-            <div className="name">{node.name}</div>
-          </div>
-          <div className="tree-item-action">
-            <Tooltip title="创建文档">
-              <div
-                className="toolbar-plus"
-                onClick={() => handleCreateDoc(node)}
-              >
-                <PlusOutlined />
-              </div>
-            </Tooltip>
-            <Tooltip title="操作">
-              <div className="toolbar-plus">
-                <EllipsisOutlined />
-              </div>
-            </Tooltip>
-          </div>
-        </div>
-      );
+  const handleCreateDoc = useCallback(
+    async (node: TreeItemData) => {
+      await createDoc({
+        spaceId: node.spaceId,
+        blockId: uuid(),
+        title: "未命名的文档",
+        parentId: node.blockId,
+      });
+      message.success("创建成功");
+      const { data } = await getChildDocs(node.blockId);
+      updateDocList(data, node);
+      setExpandedKeys((prev) => [...prev, node.key]);
     },
-    []
+    [updateDocList]
   );
 
-  useEffect(() => {
-    setList(initiakProcessedData);
-  }, [initiakProcessedData]);
+  const titleRender = (node: TreeItemData) => (
+    <div className="tree-item">
+      <div className="tree-item-title">
+        <div className="emoji">{node.emoji}</div>
+        <div className="name">{node.name}</div>
+      </div>
+      <div className="tree-item-action">
+        <div
+          className="toolbar-plus"
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            handleCreateDoc(node);
+          }}
+        >
+          <PlusOutlined />
+        </div>
+
+        <DocMenu node={node}>
+          <div
+            className="toolbar-plus"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              // handleCreateDoc(node);
+            }}
+          >
+            <EllipsisOutlined />
+          </div>
+        </DocMenu>
+      </div>
+    </div>
+  );
 
   return (
     <div className="sider-tree-container">
@@ -161,7 +129,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
       <div className={classNames("sider-tree", { expand: !collapse })}>
         <Tree
           style={{ minHeight: 0 }}
-          treeData={list}
+          treeData={treeData}
           titleRender={titleRender}
           loadData={onLoadData}
           expandedKeys={expandedKeys}
