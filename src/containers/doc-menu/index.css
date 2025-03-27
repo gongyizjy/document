@@ -1,0 +1,16 @@
+.my-popover {
+  .ant-popover-inner {
+    padding: 0;
+  }
+
+  .ant-popover-arrow {
+    display: none;
+  }
+}
+
+/* 假设你的触发按钮使用了这个类名 */
+.toolbar-plus.hovered {
+  /* 这里添加你想要的hover状态样式 */
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
