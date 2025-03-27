@@ -14,6 +14,7 @@ export default {
         addFile: "#5083fb",
         clouldUpload: "#ed6d0c",
         "think-text": "#8b8b8b",
+        title: "#1f2329",
       },
       borderWidth: {
         2: "2px",
