@@ -1,7 +1,15 @@
 import { create } from "zustand";
 import { v4 as uuid } from "uuid";
 import { message, Modal } from "antd";
-import { TreeItemData, getDocList, createDoc, delDoc } from "@/apis";
+import {
+  TreeItemData,
+  getDocList,
+  createDoc,
+  delDoc,
+  updateDoc,
+  collectDoc as collectedDoc,
+  pinDoc as pinedDoc,
+} from "@/apis";
 import processTreeData from "@/utils/processTreeData";
 import updateTreeData from "@/utils/updateTreeData";
 
@@ -22,6 +30,12 @@ interface DocList {
   ) => void;
   // 删除文档数据
   deleteDoc: (blockId: string, successMsg?: string, failMsg?: string) => void;
+  // 重命名文档
+  renameDoc: (blockId: string, title: string) => void;
+  // 收藏文档
+  collectDoc: (blockId: string) => void;
+  // 置顶文档
+  pinDoc: (blockId: string) => void;
 }
 
 const useDocListStore = create<DocList>((set) => ({
@@ -87,6 +101,70 @@ const useDocListStore = create<DocList>((set) => ({
       });
     } catch {
       message.error(failMsg);
+    }
+  },
+  renameDoc: async (blockId, title) => {
+    try {
+      const newTitle = title.trim();
+      await updateDoc({ blockId, data: { title: newTitle } });
+      const renameItem = (items: TreeItemData[]): TreeItemData[] => {
+        return items.map((item) => {
+          if (item.blockId === blockId) {
+            return { ...item, title: newTitle, name: newTitle };
+          }
+          if (item.children) {
+            return { ...item, children: renameItem(item.children) };
+          }
+          return item;
+        });
+      };
+      const newDocList = renameItem(useDocListStore.getState().docList);
+      set({ docList: newDocList });
+      message.success("修改成功");
+    } catch {
+      message.error("修改失败");
+    }
+  },
+  collectDoc: async (blockId) => {
+    try {
+      await collectedDoc(blockId);
+      const updateItem = (items: TreeItemData[]): TreeItemData[] => {
+        return items.map((item) => {
+          if (item.blockId === blockId) {
+            return { ...item, isFavorite: !item.isFavorite };
+          }
+          if (item.children) {
+            return { ...item, children: updateItem(item.children) };
+          }
+          return item;
+        });
+      };
+      const newDocList = updateItem(useDocListStore.getState().docList);
+      set({ docList: newDocList });
+      message.success("收藏成功");
+    } catch {
+      message.error("收藏失败");
+    }
+  },
+  pinDoc: async (blockId) => {
+    try {
+      await pinedDoc(blockId);
+      const updateItem = (items: TreeItemData[]): TreeItemData[] => {
+        return items.map((item) => {
+          if (item.blockId === blockId) {
+            return { ...item, isPinned: !item.isPinned };
+          }
+          if (item.children) {
+            return { ...item, children: updateItem(item.children) };
+          }
+          return item;
+        });
+      };
+      const newDocList = updateItem(useDocListStore.getState().docList);
+      set({ docList: newDocList });
+      message.success("置顶成功");
+    } catch {
+      message.error("置顶失败");
     }
   },
 }));

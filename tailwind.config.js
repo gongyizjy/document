@@ -15,6 +15,7 @@ export default {
         clouldUpload: "#ed6d0c",
         "think-text": "#8b8b8b",
         title: "#1f2329",
+        treeTitle: "#646a73",
       },
       borderWidth: {
         2: "2px",

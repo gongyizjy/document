@@ -5,6 +5,7 @@ import { Input } from "antd";
 import { Icon } from "@/components/ui/Icon";
 import "./index.css";
 import SiderDoc from "./sider-doc";
+import SiderPinDoc from "./sider-pin-doc";
 function Side() {
   const [activeLink, setActiveLink] = useState("/");
   const handleLinkClick = (path: string) => {
@@ -48,6 +49,7 @@ function Side() {
         </Link>
       </nav>
       <div>
+        <SiderPinDoc />
         <SiderDoc />
       </div>
     </>

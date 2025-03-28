@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { message, Tooltip, Tree } from "antd";
+import { message, Tooltip, Tree, Input } from "antd";
 import classNames from "classnames";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
@@ -24,12 +24,22 @@ interface SiderTreeProps {
   treeData: TreeItemData[];
 }
 function SiderTree({ title, treeData, type }: SiderTreeProps) {
-  const { updateDocList, createRootDoc } = useDocListStore();
+  const { updateDocList, createRootDoc, renameDoc } = useDocListStore();
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renamingName, setRenamingName] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [collapse, setCollapse] = useState(false);
   const navigate = useNavigate();
   const { docLibId } = useDocLib();
-  
+
+  const handleRenameStart = useCallback(
+    (blockId: string, currentName: string) => {
+      setRenamingId(blockId);
+      setRenamingName(currentName);
+    },
+    []
+  );
+
   const onLoadData = async (node: TreeItemData) => {
     // 如果存在数据的话
     if (node.children && node.children.length > 0) {
@@ -44,7 +54,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
   const handleTypePlus = async () => {
     if (type === "docs") {
       // 说明当前是我的文档库
-      createRootDoc(docLibId)
+      createRootDoc(docLibId);
     }
   };
 
@@ -68,7 +78,29 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
     <div className="tree-item">
       <div className="tree-item-title">
         <div className="emoji">{node.emoji}</div>
-        <div className="name">{node.name}</div>
+        {renamingId === node.blockId ? (
+          <Input
+            prefix={<div>{node.emoji}</div>}
+            autoFocus={true}
+            value={renamingName}
+            className="absolute left-0"
+            onChange={(e) => setRenamingName(e.target.value)}
+            onPressEnter={() => {
+              renameDoc(renamingId, renamingName);
+              setRenamingId(null);
+            }}
+            onBlur={() => {
+              renameDoc(renamingId, renamingName);
+              setRenamingId(null);
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+            }}
+          />
+        ) : (
+          <div className="name">{node.name}</div>
+        )}
       </div>
       <div className="tree-item-action">
         <div
@@ -79,10 +111,10 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
             handleCreateDoc(node);
           }}
         >
-          <PlusOutlined />
+          <PlusOutlined className="text-side-icon" />
         </div>
 
-        <DocMenu node={node}>
+        <DocMenu node={node} onRename={handleRenameStart}>
           <div
             className="toolbar-plus"
             onClick={(e) => {
@@ -91,7 +123,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
               // handleCreateDoc(node);
             }}
           >
-            <EllipsisOutlined />
+            <EllipsisOutlined className="text-side-icon" />
           </div>
         </DocMenu>
       </div>
@@ -103,7 +135,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
       <div className="sider-tree-title">
         <div className="collapse-btn" onClick={() => setCollapse(!collapse)}>
           <Tooltip title={collapse ? "点击展开" : "点击折叠"}>
-            <span className="collapse-title">{title}</span>
+            <span className="collapse-title text-side-icon">{title}</span>
             <div
               className={classNames("collapse-icon", {
                 up: !collapse,
@@ -115,10 +147,10 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
           </Tooltip>
         </div>
         {/* 置顶的文档是不需要这个plus的 */}
-        {type !== "doc" && (
+        {type !== "pin" && (
           <div className="flex items-center">
             <div className="toolbar-plus" onClick={handleTypePlus}>
-              <PlusOutlined />
+              <PlusOutlined className="text-side-icon" />
             </div>
             <div className="toolbar-plus opacity-0" onClick={handleTypePlus}>
               <PlusOutlined />
@@ -145,7 +177,6 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
           }}
         />
       </div>
-      <div style={{ height: "12px", width: "100%", userSelect: "none" }} />
     </div>
   );
 }

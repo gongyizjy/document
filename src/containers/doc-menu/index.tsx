@@ -8,6 +8,7 @@ import "./index.css";
 interface DocMenuProps {
   node: TreeItemData;
   children: ReactNode;
+  onRename?: (blockId: string, name: string) => void;
 }
 type SupportedIcons =
   | "ExternalLink"
@@ -33,24 +34,28 @@ const menuList: MenuItem[] = [
   { id: "Pin", icon: "Pin", title: "置顶" },
 ];
 
-function DocMenu({ node, children }: DocMenuProps) {
+function DocMenu({ node, children, onRename }: DocMenuProps) {
   const [open, setOpen] = useState(false);
-  const { deleteDoc } = useDocListStore();
+  const { deleteDoc, pinDoc, collectDoc } = useDocListStore();
+  // 删除文档
   const delDoc = (node: TreeItemData) => {
     // 删除文档
     deleteDoc(node.blockId);
   };
+  // 在新标签页打开
   const openNewTab = (node: TreeItemData) => {
     const baseUrl = window.location.origin;
     window.open(`${baseUrl}/docs/${node.blockId}`, "_blank");
   };
-
+  // 复制链接
   const copyLink = (node: TreeItemData) => {
     const baseUrl = window.location.origin;
     const url = `${baseUrl}/docs/${node.blockId}`;
     navigator.clipboard.writeText(url);
     message.success("复制成功");
   };
+  // 重命名
+
   // 同一处理点击事件
   const handleClick = (id: string, node: TreeItemData) => {
     setOpen(false);
@@ -62,12 +67,16 @@ function DocMenu({ node, children }: DocMenuProps) {
         copyLink(node);
         break;
       case "PenLine":
+        onRename?.(node.blockId, node.title);
         break;
       case "Forward":
+        message.success("这个功能还没做，敬请期待");
         break;
       case "Star":
+        collectDoc(node.blockId);
         break;
       case "Pin":
+        pinDoc(node.blockId);
         break;
       default:
         break;
@@ -86,8 +95,23 @@ function DocMenu({ node, children }: DocMenuProps) {
           }}
           className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:bg-slate-100 rounded-md"
         >
-          <Icon name={item.icon} className="text-title" />
-          <div className="text-title">{item.title}</div>
+          <Icon
+            name={
+              node.isFavorite && item.icon === "Star"
+                ? "StarOff"
+                : node.isPinned && item.icon === "Pin"
+                ? "PinOff"
+                : item.icon
+            }
+            className="text-title"
+          />
+          <div className="text-title">
+            {node.isFavorite && item.icon === "Star"
+              ? "取消收藏"
+              : node.isPinned && item.icon === "Pin"
+              ? "取消置顶"
+              : item.title}
+          </div>
         </div>
       ))}
       <Divider style={{ margin: "0" }} />

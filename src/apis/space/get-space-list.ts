@@ -17,6 +17,8 @@ export interface TreeItemData {
   type: number;
   parentId?: string;
   isLeaf?: boolean;
+  isFavorite: boolean;
+  isPinned: boolean;
 }
 
 export default async function getSpaceList(): Promise<
