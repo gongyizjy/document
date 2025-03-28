@@ -1,0 +1,9 @@
+.emoji-picker-overlay {
+  .ant-popover-inner {
+    padding: 0;
+  }
+
+  .ant-popover-arrow {
+    display: none;
+  }
+}
