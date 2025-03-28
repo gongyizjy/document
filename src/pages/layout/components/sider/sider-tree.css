@@ -134,9 +134,17 @@
   align-items: center;
 
   .emoji {
+    display: flex;
     width: 20px;
-    height: 24px;
+    height: 20px;
     flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    &:hover {
+      background-color: rgba(31, 35, 41, 0.08);
+    }
   }
   .name {
     width: 0;

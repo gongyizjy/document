@@ -36,6 +36,8 @@ interface DocList {
   collectDoc: (blockId: string) => void;
   // 置顶文档
   pinDoc: (blockId: string) => void;
+  // 修改emoji
+  changeEmoji: (blockId: string, emoji: string) => void;
 }
 
 const useDocListStore = create<DocList>((set) => ({
@@ -165,6 +167,26 @@ const useDocListStore = create<DocList>((set) => ({
       message.success("置顶成功");
     } catch {
       message.error("置顶失败");
+    }
+  },
+  changeEmoji: async (blockId, emoji) => {
+    try {
+      await updateDoc({ blockId, data: { emoji } });
+      const updateItem = (items: TreeItemData[]): TreeItemData[] => {
+        return items.map((item) => {
+          if (item.blockId === blockId) {
+            return { ...item, emoji: emoji };
+          }
+          if (item.children) {
+            return { ...item, children: updateItem(item.children) };
+          }
+          return item;
+        });
+      };
+      const newDocList = updateItem(useDocListStore.getState().docList);
+      set({ docList: newDocList });
+    } catch {
+      message.error("修改失败");
     }
   },
 }));

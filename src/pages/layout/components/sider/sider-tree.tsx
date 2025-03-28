@@ -16,6 +16,7 @@ import {
 } from "@/apis";
 import { useDocLib, useDocListStore } from "@/store";
 import { DocMenu } from "@/containers";
+import SelectEmojiPicker from "@/components/select-emoji-picker";
 import "./sider-tree.css";
 
 interface SiderTreeProps {
@@ -24,7 +25,8 @@ interface SiderTreeProps {
   treeData: TreeItemData[];
 }
 function SiderTree({ title, treeData, type }: SiderTreeProps) {
-  const { updateDocList, createRootDoc, renameDoc } = useDocListStore();
+  const { updateDocList, createRootDoc, renameDoc, changeEmoji } =
+    useDocListStore();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renamingName, setRenamingName] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
@@ -77,10 +79,26 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
   const titleRender = (node: TreeItemData) => (
     <div className="tree-item">
       <div className="tree-item-title">
-        <div className="emoji">{node.emoji}</div>
+        <SelectEmojiPicker
+          onSelect={(emoji) => {
+            changeEmoji(node.blockId, emoji);
+          }}
+        >
+          <Tooltip title="更换图标">
+            <div
+              className="emoji"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              {node.emoji}
+            </div>
+          </Tooltip>
+        </SelectEmojiPicker>
+
         {renamingId === node.blockId ? (
           <Input
-            prefix={<div>{node.emoji}</div>}
             autoFocus={true}
             value={renamingName}
             className="absolute left-0"
@@ -137,6 +155,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
           <Tooltip title={collapse ? "点击展开" : "点击折叠"}>
             <span className="collapse-title text-side-icon">{title}</span>
             <div
+              style={{ display: treeData.length === 0 ? "none" : "block" }}
               className={classNames("collapse-icon", {
                 up: !collapse,
                 down: collapse,
@@ -152,8 +171,12 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
             <div className="toolbar-plus" onClick={handleTypePlus}>
               <PlusOutlined className="text-side-icon" />
             </div>
-            <div className="toolbar-plus opacity-0" onClick={handleTypePlus}>
-              <PlusOutlined />
+            <div
+              className={classNames("toolbar-plus", {
+                "opacity-0": type !== "space",
+              })}
+            >
+              <EllipsisOutlined />
             </div>
           </div>
         )}
