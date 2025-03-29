@@ -18,6 +18,10 @@ interface DocList {
   docList: TreeItemData[];
   // 设置文档库列表数据
   setDocList: (docList: TreeItemData[]) => void;
+  // 置顶文档数据
+  pinDocList: TreeItemData[];
+  // 设置置顶文档数据
+  setPinDocList: (pinDocList: TreeItemData[]) => void;
   // 获取文档库列表数据
   fetchDocList: (callback?: (spaceId: string) => void) => void;
   // 更新文档库列表数据
@@ -42,26 +46,36 @@ interface DocList {
 
 const useDocListStore = create<DocList>((set) => ({
   docList: [],
+  pinDocList: [],
 
   setDocList: (docList) => set({ docList }),
+
+  setPinDocList: (pinDocList) => set({ pinDocList }),
 
   fetchDocList: async (callback) => {
     const res = await getDocList();
     const processTreeDataRes = processTreeData(res.data);
-    set({ docList: processTreeDataRes });
+    // 过滤出所有的置顶文档
+    const pinDocList = processTreeDataRes.filter((item) => item.isPinned);
+    set({ docList: processTreeDataRes, pinDocList: pinDocList });
     callback?.(res.data[0].spaceId);
   },
 
   updateDocList: (newData, node) => {
     const processTreeDataRes = processTreeData(newData);
-    set({
-      docList: updateTreeData(
-        useDocListStore.getState().docList,
-        node.blockId,
-        { hasChildren: true, isLeaf: false },
-        processTreeDataRes
-      ),
-    });
+    const updatedDocList = updateTreeData(
+      useDocListStore.getState().docList,
+      node.blockId,
+      { hasChildren: true, isLeaf: false },
+      processTreeDataRes
+    );
+    const updatedPinDocList = updateTreeData(
+      useDocListStore.getState().pinDocList,
+      node.blockId,
+      { hasChildren: true, isLeaf: false },
+      processTreeDataRes
+    );
+    set({ docList: updatedDocList, pinDocList: updatedPinDocList });
   },
 
   createRootDoc: async (
@@ -154,6 +168,15 @@ const useDocListStore = create<DocList>((set) => ({
       const updateItem = (items: TreeItemData[]): TreeItemData[] => {
         return items.map((item) => {
           if (item.blockId === blockId) {
+            // 置顶文档
+            if (!item.isPinned) {
+              // 如果是置顶的文档，则取消置顶
+              const pinDocList = [
+                ...useDocListStore.getState().pinDocList,
+                { ...item, isPinned: true },
+              ];
+              set({ pinDocList });
+            }
             return { ...item, isPinned: !item.isPinned };
           }
           if (item.children) {
