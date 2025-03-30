@@ -9,9 +9,12 @@ import {
   updateDoc,
   collectDoc as collectedDoc,
   pinDoc as pinedDoc,
+  getPinDocList,
 } from "@/apis";
 import processTreeData from "@/utils/processTreeData";
 import updateTreeData from "@/utils/updateTreeData";
+import useSpaceList from "./useSpaceList";
+import useDocLib from "./docLib";
 
 interface DocList {
   // 文档库列表数据
@@ -22,6 +25,8 @@ interface DocList {
   pinDocList: TreeItemData[];
   // 设置置顶文档数据
   setPinDocList: (pinDocList: TreeItemData[]) => void;
+  // 获取置顶文档列表数据
+  fetchPinDocList: () => void;
   // 获取文档库列表数据
   fetchDocList: (callback?: (spaceId: string) => void) => void;
   // 更新文档库列表数据
@@ -33,15 +38,19 @@ interface DocList {
     failMsg?: string
   ) => void;
   // 删除文档数据
-  deleteDoc: (blockId: string, successMsg?: string, failMsg?: string) => void;
+  deleteDoc: (
+    node: TreeItemData,
+    successMsg?: string,
+    failMsg?: string
+  ) => void;
   // 重命名文档
-  renameDoc: (blockId: string, title: string) => void;
+  renameDoc: (node: TreeItemData, title: string) => void;
   // 收藏文档
-  collectDoc: (blockId: string) => void;
+  collectDoc: (node: TreeItemData) => void;
   // 置顶文档
-  pinDoc: (blockId: string) => void;
+  pinDoc: (blockId: TreeItemData) => void;
   // 修改emoji
-  changeEmoji: (blockId: string, emoji: string) => void;
+  changeEmoji: (node: TreeItemData, emoji: string) => void;
 }
 
 const useDocListStore = create<DocList>((set) => ({
@@ -55,10 +64,13 @@ const useDocListStore = create<DocList>((set) => ({
   fetchDocList: async (callback) => {
     const res = await getDocList();
     const processTreeDataRes = processTreeData(res.data);
-    // 过滤出所有的置顶文档
-    const pinDocList = processTreeDataRes.filter((item) => item.isPinned);
-    set({ docList: processTreeDataRes, pinDocList: pinDocList });
+    set({ docList: processTreeDataRes });
     callback?.(res.data[0].spaceId);
+  },
+  fetchPinDocList: async () => {
+    const res = await getPinDocList();
+    const processTreeDataRes = processTreeData(res.data);
+    set({ pinDocList: processTreeDataRes });
   },
 
   updateDocList: (newData, node) => {
@@ -101,17 +113,69 @@ const useDocListStore = create<DocList>((set) => ({
     }
   },
 
-  deleteDoc: async (blockId, successMsg = "删除成功", failMsg = "删除失败") => {
+  deleteDoc: async (node, successMsg = "删除成功", failMsg = "删除失败") => {
     try {
+      const updateItem = (
+        items: TreeItemData[],
+        blockId: string
+      ): TreeItemData[] => {
+        return items.reduce<TreeItemData[]>((acc, item) => {
+          if (item.blockId === blockId) {
+            // 如果当前项的 blockId 匹配，不包含此项
+            return acc;
+          } else {
+            // 创建一个新的 item 对象，避免直接修改原对象
+            const newItem = { ...item };
+            if (item.children && item.children.length > 0) {
+              newItem.children = updateItem(item.children, blockId); // 更新子项
+              if (newItem.children.length === 0) {
+                newItem.hasChildren = false;
+                newItem.isLeaf = true;
+              }
+            }
+            acc.push(newItem); // 将新对象添加到累加器数组中
+            return acc;
+          }
+        }, []);
+      };
       Modal.confirm({
         title: "温馨提示",
         content: "删除后，下面的子文档也会被删除",
+        cancelText: "取消",
+        okText: "确定",
         onOk: async () => {
-          await delDoc(blockId);
-          const newDocList = useDocListStore
-            .getState()
-            .docList.filter((item) => item.blockId !== blockId);
-          set({ docList: newDocList });
+          // 表示是否是文档库
+          const flag = node.spaceId === useDocLib.getState().docLibId;
+          await delDoc(node.blockId);
+          if (flag) {
+            const newDocList = updateItem(
+              useDocListStore.getState().docList,
+              node.blockId
+            );
+            const newPinDocList = updateItem(
+              useDocListStore.getState().pinDocList,
+              node.blockId
+            );
+            set({ docList: newDocList, pinDocList: newPinDocList });
+          } else {
+            const space = useSpaceList
+              .getState()
+              .spaceList.filter((item) => item.spaceId === node.spaceId);
+            if (space.length > 0) {
+              const newSpaceList = updateItem(
+                useSpaceList.getState().spaceList,
+                node.blockId
+              );
+              const newPinSpaceList = updateItem(
+                useSpaceList.getState().pinSpaceList,
+                node.blockId
+              );
+              useSpaceList.setState({
+                spaceList: newSpaceList,
+                pinSpaceList: newPinSpaceList,
+              });
+            }
+          }
           message.success(successMsg);
         },
       });
@@ -119,13 +183,15 @@ const useDocListStore = create<DocList>((set) => ({
       message.error(failMsg);
     }
   },
-  renameDoc: async (blockId, title) => {
+  renameDoc: async (node, title) => {
     try {
+      // 表示是否是文档库
+      const flag = node.spaceId === useDocLib.getState().docLibId;
       const newTitle = title.trim();
-      await updateDoc({ blockId, data: { title: newTitle } });
+      await updateDoc({ blockId: node.blockId, data: { title: newTitle } });
       const renameItem = (items: TreeItemData[]): TreeItemData[] => {
         return items.map((item) => {
-          if (item.blockId === blockId) {
+          if (item.blockId === node.blockId) {
             return { ...item, title: newTitle, name: newTitle };
           }
           if (item.children) {
@@ -134,70 +200,136 @@ const useDocListStore = create<DocList>((set) => ({
           return item;
         });
       };
-      const newDocList = renameItem(useDocListStore.getState().docList);
-      set({ docList: newDocList });
+      // 表示是在文档库列表下的而不是空间下的
+      if (flag) {
+        const newDocList = renameItem(useDocListStore.getState().docList);
+        const newPinDocList = renameItem(useDocListStore.getState().pinDocList);
+        set({ docList: newDocList, pinDocList: newPinDocList });
+      } else {
+        const space = useSpaceList
+          .getState()
+          .spaceList.filter((item) => item.spaceId === node.spaceId);
+        if (space.length > 0) {
+          const newSpaceList = renameItem(useSpaceList.getState().spaceList);
+          const newPinSpaceList = renameItem(
+            useSpaceList.getState().pinSpaceList
+          );
+          useSpaceList.setState({
+            spaceList: newSpaceList,
+            pinSpaceList: newPinSpaceList,
+          });
+        }
+      }
       message.success("修改成功");
     } catch {
       message.error("修改失败");
     }
   },
-  collectDoc: async (blockId) => {
-    try {
-      await collectedDoc(blockId);
-      const updateItem = (items: TreeItemData[]): TreeItemData[] => {
-        return items.map((item) => {
-          if (item.blockId === blockId) {
-            return { ...item, isFavorite: !item.isFavorite };
+  collectDoc: async (node) => {
+    let hasCollected = false;
+    // 判断是不是文档库中的文档
+    const flag = node.spaceId === useDocLib.getState().docLibId;
+    await collectedDoc(node.blockId);
+    const updateItem = (items: TreeItemData[]): TreeItemData[] => {
+      return items.map((item) => {
+        if (item.blockId === node.blockId) {
+          if (!item.isFavorite) {
+            hasCollected = true;
+          } else {
+            hasCollected = false;
           }
-          if (item.children) {
-            return { ...item, children: updateItem(item.children) };
-          }
-          return item;
-        });
-      };
+          return { ...item, isFavorite: !item.isFavorite };
+        }
+        if (item.children) {
+          return { ...item, children: updateItem(item.children) };
+        }
+        return item;
+      });
+    };
+    if (flag) {
       const newDocList = updateItem(useDocListStore.getState().docList);
-      set({ docList: newDocList });
+      const newPinDocList = updateItem(useDocListStore.getState().pinDocList);
+      set({ docList: newDocList, pinDocList: newPinDocList });
+    } else {
+      // 查询当前文档的空间
+      const space = useSpaceList
+        .getState()
+        .spaceList.filter((item) => item.spaceId === node.spaceId);
+      if (space.length > 0) {
+        const newSpaceList = updateItem(useSpaceList.getState().spaceList);
+        const newPinSpaceList = updateItem(
+          useSpaceList.getState().pinSpaceList
+        );
+        useSpaceList.setState({
+          spaceList: newSpaceList,
+          pinSpaceList: newPinSpaceList,
+        });
+      }
+    }
+    if (hasCollected) {
       message.success("收藏成功");
-    } catch {
-      message.error("收藏失败");
+    } else {
+      message.success("取消收藏");
     }
   },
-  pinDoc: async (blockId) => {
-    try {
-      await pinedDoc(blockId);
-      const updateItem = (items: TreeItemData[]): TreeItemData[] => {
-        return items.map((item) => {
-          if (item.blockId === blockId) {
-            // 置顶文档
-            if (!item.isPinned) {
-              // 如果是置顶的文档，则取消置顶
-              const pinDocList = [
-                ...useDocListStore.getState().pinDocList,
-                { ...item, isPinned: true },
-              ];
-              set({ pinDocList });
-            }
-            return { ...item, isPinned: !item.isPinned };
+  // 置顶文档
+  pinDoc: async (node) => {
+    let hasPinned = false;
+    const flag = node.spaceId === useDocLib.getState().docLibId;
+    await pinedDoc(node.blockId);
+    const updateItem = (items: TreeItemData[]): TreeItemData[] => {
+      return items.map((item) => {
+        if (item.blockId === node.blockId) {
+          if (!item.isPinned) {
+            hasPinned = true;
+            const pinDocList = [
+              ...useDocListStore.getState().pinDocList,
+              { ...item, isPinned: true },
+            ];
+            set({ pinDocList });
+          } else {
+            hasPinned = false;
+            const pinDocList = useDocListStore
+              .getState()
+              .pinDocList.filter((item) => item.blockId !== node.blockId);
+            set({ pinDocList });
           }
-          if (item.children) {
-            return { ...item, children: updateItem(item.children) };
-          }
-          return item;
-        });
-      };
+          return { ...item, isPinned: !item.isPinned };
+        }
+        if (item.children) {
+          return { ...item, children: updateItem(item.children) };
+        }
+        return item;
+      });
+    };
+    if (flag) {
       const newDocList = updateItem(useDocListStore.getState().docList);
       set({ docList: newDocList });
+    } else {
+      // 查询当前文档的空间
+      const space = useSpaceList
+        .getState()
+        .spaceList.filter((item) => item.spaceId === node.spaceId);
+      if (space.length > 0) {
+        const newSpaceList = updateItem(useSpaceList.getState().pinSpaceList);
+        useSpaceList.setState({ pinSpaceList: newSpaceList });
+      }
+    }
+    if (hasPinned) {
       message.success("置顶成功");
-    } catch {
-      message.error("置顶失败");
+    } else {
+      message.success("取消置顶");
     }
   },
-  changeEmoji: async (blockId, emoji) => {
+  // 修改emoji
+  changeEmoji: async (node, emoji) => {
     try {
-      await updateDoc({ blockId, data: { emoji } });
+      // 表示在当前文档下
+      const flag = node.spaceId === useDocLib.getState().docLibId;
+      await updateDoc({ blockId: node.blockId, data: { emoji } });
       const updateItem = (items: TreeItemData[]): TreeItemData[] => {
         return items.map((item) => {
-          if (item.blockId === blockId) {
+          if (item.blockId === node.blockId) {
             return { ...item, emoji: emoji };
           }
           if (item.children) {
@@ -206,8 +338,29 @@ const useDocListStore = create<DocList>((set) => ({
           return item;
         });
       };
-      const newDocList = updateItem(useDocListStore.getState().docList);
-      set({ docList: newDocList });
+      // 先调用一下
+      // 表示是在文档库列表下的而不是空间下的
+      if (flag) {
+        const newDocList = updateItem(useDocListStore.getState().docList);
+        const newPinDocList = updateItem(useDocListStore.getState().pinDocList);
+        set({ docList: newDocList, pinDocList: newPinDocList });
+      } else {
+        // 先找到是在哪个空间下的
+        const space = useSpaceList
+          .getState()
+          .spaceList.filter((item) => item.spaceId === node.spaceId);
+        if (space.length > 0) {
+          const newSpaceList = updateItem(useSpaceList.getState().spaceList);
+          const newPinSpaceList = updateItem(
+            useSpaceList.getState().pinSpaceList
+          );
+          useSpaceList.setState({
+            spaceList: newSpaceList,
+            pinSpaceList: newPinSpaceList,
+          });
+        }
+      }
+      message.success("修改成功");
     } catch {
       message.error("修改失败");
     }
