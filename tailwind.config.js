@@ -16,6 +16,9 @@ export default {
         "think-text": "#8b8b8b",
         title: "#1f2329",
         treeTitle: "#646a73",
+        add: "#1456f0",
+        "add-hover": "#e7eefd",
+        "bg-emojiHover": "rgba(31, 35, 41, 0.08)",
       },
       borderWidth: {
         2: "2px",
