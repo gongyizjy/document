@@ -40,3 +40,61 @@
   grid-column-gap: 24px;
   padding: 0 24px;
 }
+
+.grid-background {
+  box-shadow: 0 2px 4px rgba(31, 35, 41, 0.12);
+}
+
+.wiki-space {
+  &:hover {
+    outline: 2px solid #007fff;
+    .wiki-button {
+      opacity: 1;
+    }
+    .grid-background {
+      img {
+        transform: scale(1.1);
+      }
+    }
+    .pin {
+      opacity: 1;
+    }
+  }
+  .grid-background {
+    overflow: hidden;
+
+    img {
+      transition: all 0.3s ease-out;
+    }
+  }
+}
+
+.wiki-button {
+  transition: all 0.3s ease-in-out;
+}
+
+.ellipsis-multi {
+  display: -webkit-box;
+  overflow: hidden;
+  -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+.wiki-space-grid-item-title {
+  position: relative;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  margin-top: 12px;
+  letter-spacing: normal;
+}
+.wiki-space-grid-item-desc {
+  position: relative;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+  margin: 6px 0;
+  letter-spacing: 0.5px;
+}
