@@ -10,12 +10,12 @@ import {
 } from "@ant-design/icons";
 import {
   getChildDocs,
-  // getSpaceFirstChild,
+  getSpaceFirstChild,
   createDoc,
   TreeItemData,
 } from "@/apis";
-import { useDocLib, useDocListStore } from "@/store";
-import { DocMenu } from "@/containers";
+import { useDocLib, useDocListStore, useSpaceList } from "@/store";
+import { DocMenu, CreateSpaceModal } from "@/containers";
 import SelectEmojiPicker from "@/components/select-emoji-picker";
 import "./sider-tree.css";
 
@@ -27,10 +27,12 @@ interface SiderTreeProps {
 function SiderTree({ title, treeData, type }: SiderTreeProps) {
   const { updateDocList, createRootDoc, renameDoc, changeEmoji } =
     useDocListStore();
+  const { updateSpaceList } = useSpaceList();
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renamingName, setRenamingName] = useState("");
   const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
   const [collapse, setCollapse] = useState(false);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { docLibId } = useDocLib();
 
@@ -49,6 +51,12 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
     }
     if (!node.hasChildren) return;
     // 这个是子节点的数据
+    // 如果是空间的话
+    if (node.type === 2) {
+      const { data } = await getSpaceFirstChild(node.spaceId);
+      updateSpaceList(data, node);
+      return;
+    }
     const { data } = await getChildDocs(node.blockId);
     updateDocList(data, node);
   };
@@ -58,6 +66,9 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
       // 说明当前是我的文档库
       createRootDoc(docLibId);
     }
+    if (type === "space") {
+      setOpen(true);
+    }
   };
 
   const handleCreateDoc = useCallback(
@@ -66,14 +77,20 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
         spaceId: node.spaceId,
         blockId: uuid(),
         title: "未命名的文档",
-        parentId: node.blockId,
+        parentId: node.blockId || undefined,
       });
       message.success("创建成功");
+      setExpandedKeys((prev) => [...prev, node.key]);
+      // 通过type判断是否是空间
+      if (node.type === 2) {
+        const { data } = await getSpaceFirstChild(node.spaceId);
+        updateSpaceList(data, node);
+        return;
+      }
       const { data } = await getChildDocs(node.blockId);
       updateDocList(data, node);
-      setExpandedKeys((prev) => [...prev, node.key]);
     },
-    [updateDocList]
+    [updateDocList, updateSpaceList]
   );
 
   const titleRender = (node: TreeItemData) => (
@@ -81,7 +98,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
       <div className="tree-item-title">
         <SelectEmojiPicker
           onSelect={(emoji) => {
-            changeEmoji(node.blockId, emoji);
+            changeEmoji(node, emoji);
           }}
         >
           <Tooltip title="更换图标">
@@ -104,11 +121,11 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
             className="absolute left-0"
             onChange={(e) => setRenamingName(e.target.value)}
             onPressEnter={() => {
-              renameDoc(renamingId, renamingName);
+              renameDoc(node, renamingName);
               setRenamingId(null);
             }}
             onBlur={() => {
-              renameDoc(renamingId, renamingName);
+              renameDoc(node, renamingName);
               setRenamingId(null);
             }}
             onClick={(e) => {
@@ -132,18 +149,30 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
           <PlusOutlined className="text-side-icon" />
         </div>
 
-        <DocMenu node={node} onRename={handleRenameStart}>
+        {node.type !== 2 && (
+          <DocMenu node={node} onRename={handleRenameStart}>
+            <div
+              className="toolbar-plus"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+              }}
+            >
+              <EllipsisOutlined className="text-side-icon" />
+            </div>
+          </DocMenu>
+        )}
+        {node.type === 2 && (
           <div
             className="toolbar-plus"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-              // handleCreateDoc(node);
             }}
           >
             <EllipsisOutlined className="text-side-icon" />
           </div>
-        </DocMenu>
+        )}
       </div>
     </div>
   );
@@ -200,6 +229,7 @@ function SiderTree({ title, treeData, type }: SiderTreeProps) {
           }}
         />
       </div>
+      <CreateSpaceModal open={open} setOpen={setOpen} />
     </div>
   );
 }
