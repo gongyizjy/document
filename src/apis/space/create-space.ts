@@ -1,6 +1,6 @@
 import instance from "../config";
 
-interface createSpaceData {
+export interface createSpaceData {
   spaceId: string;
   name: string;
   description: string;
