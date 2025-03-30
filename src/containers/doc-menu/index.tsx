@@ -40,7 +40,7 @@ function DocMenu({ node, children, onRename }: DocMenuProps) {
   // 删除文档
   const delDoc = (node: TreeItemData) => {
     // 删除文档
-    deleteDoc(node.blockId);
+    deleteDoc(node);
   };
   // 在新标签页打开
   const openNewTab = (node: TreeItemData) => {
@@ -73,10 +73,10 @@ function DocMenu({ node, children, onRename }: DocMenuProps) {
         message.success("这个功能还没做，敬请期待");
         break;
       case "Star":
-        collectDoc(node.blockId);
+        collectDoc(node);
         break;
       case "Pin":
-        pinDoc(node.blockId);
+        pinDoc(node);
         break;
       default:
         break;
@@ -115,17 +115,19 @@ function DocMenu({ node, children, onRename }: DocMenuProps) {
         </div>
       ))}
       <Divider style={{ margin: "0" }} />
-      <div
-        className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:bg-slate-100 rounded-md"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          delDoc(node);
-        }}
-      >
-        <Icon name="Trash2" />
-        <div>删除</div>
-      </div>
+      {node.accessLevel === "admin" && (
+        <div
+          className="flex gap-2 items-center px-2 py-1 cursor-pointer hover:bg-slate-100 rounded-md"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            delDoc(node);
+          }}
+        >
+          <Icon name="Trash2" />
+          <div>删除</div>
+        </div>
+      )}
     </div>
   );
 
