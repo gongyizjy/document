@@ -6,6 +6,7 @@ import { Icon } from "@/components/ui/Icon";
 import "./index.css";
 import SiderDoc from "./sider-doc";
 import SiderPinDoc from "./sider-pin-doc";
+import SiderSpace from "./sider-space";
 function Side() {
   const [activeLink, setActiveLink] = useState("/");
   const handleLinkClick = (path: string) => {
@@ -50,6 +51,7 @@ function Side() {
       </nav>
       <div>
         <SiderPinDoc />
+        <SiderSpace />
         <SiderDoc />
       </div>
     </>

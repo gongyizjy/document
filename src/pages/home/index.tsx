@@ -18,7 +18,7 @@ function Home() {
         )}
       </div>
       <div className="home-content">
-        <AddOrUpload type="add" className="mr-2" />
+        <AddOrUpload type="addFile" className="mr-2" />
         <AddOrUpload type="upload" />
       </div>
       <div className="home-content-list">
