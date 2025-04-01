@@ -36,6 +36,9 @@ function DocEditor() {
   const editor = useEditor(
     {
       extensions: extension,
+      onCreate({ editor }) {
+        editor.view.dom.spellcheck = false;
+      }
     },
     [extension]
   );
