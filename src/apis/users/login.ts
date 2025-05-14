@@ -2,9 +2,11 @@ import instance from "../config";
 import Response from "../tool";
 
 export interface UserInfo {
+  id: number
   username: string;
   email: string;
   avatar: string;
+  defaultSpaceId?: string;
 }
 
 export interface LoginData {

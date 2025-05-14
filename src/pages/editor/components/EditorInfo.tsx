@@ -55,9 +55,11 @@ export const EditorInfo = memo(
               ))}
               {users.length > 3 && (
                 <div className="-ml-3">
-                  <div className="flex items-center justify-center w-8 h-8 font-bold text-xs leading-none border border-white dark:border-black bg-[#FFA2A2] rounded-full">
-                    +{users.length - 3}
-                  </div>
+                  <Tooltip title={`共有 ${users.length} 个协作者`}>
+                    <div className="flex items-center justify-center w-8 h-8 font-bold text-xs leading-none border border-white dark:border-black bg-[#FFA2A2] rounded-full">
+                      +{users.length - 3}
+                    </div>
+                  </Tooltip>
                 </div>
               )}
             </div>

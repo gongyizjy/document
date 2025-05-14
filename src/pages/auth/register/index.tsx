@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Input, message } from "antd";
-import { RuleObject } from "antd/es/form";
 import { useRequest } from "ahooks";
 import { Icon } from "@/components/ui/Icon";
 import { RegisterData, register } from "@/apis";
@@ -15,31 +14,25 @@ function Register() {
       navigate(-1);
     },
   });
-  const validator = (rule: RuleObject, value: string) => {
-    if (rule.type === "email") {
-      if (!value) {
-        // 如果值为空，返回必填的错误消息
-        return Promise.reject("请输入邮箱");
-      }
-      const reg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/;
-      if (!reg.test(value)) {
-        return Promise.reject("请输入正确的邮箱");
-      }
-    }
-    return Promise.resolve();
-  };
-  const handleSubmit =  () => {
+  const handleSubmit = () => {
     form.validateFields().then((values: RegisterData) => {
-     run(values);
+      run(values);
     });
   };
   return (
     <div>
-      <Form name="register" form={form}>
+      <Form name="register" form={form} onFinish={handleSubmit}>
         <Form.Item
           name="username"
           validateTrigger="onBlur"
-          rules={[{ required: true, message: "请输入用户名" }]}
+          required
+          rules={[
+            { required: true, message: "请输入用户名" },
+            {
+              pattern: /^[a-zA-Z0-9_-]{4,16}$/,
+              message: "请输入4-16位包含字母、数字、下划线或短横线的用户名",
+            },
+          ]}
         >
           <Input
             placeholder="请输入用户名"
@@ -50,10 +43,15 @@ function Register() {
         <Form.Item
           name="email"
           validateTrigger="onBlur"
+          required
           rules={[
             {
-              type: "email",
-              validator: validator,
+              required: true,
+              message: "请输入邮箱",
+            },
+            {
+              pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+              message: "请输入正确格式的邮箱",
             },
           ]}
         >
@@ -66,7 +64,14 @@ function Register() {
         <Form.Item
           name="password"
           validateTrigger="onBlur"
-          rules={[{ required: true, message: "请输入密码" }]}
+          required
+          rules={[
+            { required: true, message: "请输入密码" },
+            {
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\s\W]).{6,18}$/,
+              message: "请输入6-18位包含大小写字母和特殊字符的密码",
+            },
+          ]}
         >
           <Input.Password
             placeholder="请输入密码"
@@ -74,12 +79,12 @@ function Register() {
             className="h-10"
           />
         </Form.Item>
+        <Form.Item>
+          <Button type="primary" className="w-full" htmlType="submit">
+            注册
+          </Button>
+        </Form.Item>
       </Form>
-      <div className="login-footer">
-        <Button type="primary" onClick={handleSubmit}>
-          注册
-        </Button>
-      </div>
     </div>
   );
 }

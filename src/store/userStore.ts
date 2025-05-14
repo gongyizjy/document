@@ -11,6 +11,7 @@ const useUserInfo = create<User>()(
   persist(
     (set) => ({
       userInfo: {
+        id: 0,
         username: "",
         avatar: "",
         email: "",

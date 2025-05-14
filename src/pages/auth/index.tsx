@@ -1,20 +1,32 @@
-import { Outlet, Link } from "react-router-dom"
-import './index.css'
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import "./index.css";
 function Auth() {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
   return (
     <div className="auth-container">
-      <div className="auth-header">
-        <h1>多人文档在线编辑</h1>
-      </div>
       <div className="auth-content">
-        <div className="auth-title">
-          <Link className="" to="/auth/login">登录</Link>
-          <Link to="/auth/register">注册</Link>
-        </div>
+        <h1 className="auth-title">多人文档在线编辑</h1>
         <Outlet />
+        <div className="auth-footer">
+          <button
+            onClick={() =>
+              navigate(
+                pathname === "/auth/login" ? "/auth/register" : "/auth/login"
+              )
+            }
+          >
+            {pathname === "/auth/login"
+              ? "没有账号？ 前往注册>>>"
+              : "已有账号？ 前往登录>>>"}
+          </button>
+        </div>
+      
       </div>
+      <div className="mask" />
     </div>
-  )
+  );
 }
 
-export default Auth
+export default Auth;

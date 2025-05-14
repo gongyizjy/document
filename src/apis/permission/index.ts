@@ -1,0 +1,1 @@
+export { default as getPermision } from './get-permision';

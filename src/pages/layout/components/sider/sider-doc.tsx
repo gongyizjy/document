@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import SiderTree from "./sider-tree";
-import { useDocLib, useDocListStore } from "@/store";
+import { useDocListStore } from "@/store";
 function SiderDoc() {
   const { docList, fetchDocList } = useDocListStore();
-  const { setDocLibId } = useDocLib();
 
   useEffect(() => {
-    fetchDocList(setDocLibId);
-  }, [fetchDocList, setDocLibId]);
+    fetchDocList();
+  }, [fetchDocList]);
 
   return <SiderTree title="我的文档库" treeData={docList} type="docs" />;
 }

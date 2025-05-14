@@ -1,15 +1,7 @@
 import { useState } from "react";
-import {
-  Avatar,
-  Button,
-  Empty,
-  Input,
-  message,
-  Tooltip,
-  Typography,
-} from "antd";
+import { Avatar, Button, Empty, message, Tooltip, Typography } from "antd";
 // import { useRequest } from "ahooks";
-import { SearchOutlined, SettingOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { CreateSpaceModal } from "@/containers";
 import { useUserInfo, useSpaceList } from "@/store";
 import { Icon } from "@/components/ui/Icon";
@@ -110,13 +102,6 @@ function Konwledge() {
           <p style={{ fontSize: "16px", fontWeight: 500, marginLeft: "24px" }}>
             全部空间
           </p>
-          <Input
-            prefix={
-              <SearchOutlined style={{ fontSize: "16px", color: "#d2d8dc" }} />
-            }
-            placeholder="搜索空间"
-            className="w-52 h-8"
-          />
         </div>
         {spaceList && spaceList.length > 0 ? (
           <div className="konwledge-content-list-content">

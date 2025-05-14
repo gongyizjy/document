@@ -1,4 +1,4 @@
-// import { useState } from "react";
+import { useState } from "react";
 import { useEditorState } from "@tiptap/react";
 import { Editor } from "@tiptap/core";
 import { Icon } from "@/components/ui/Icon";
@@ -6,23 +6,30 @@ import { WebSocketStatus } from "@hocuspocus/provider";
 import Toolbar from "@/components/ui/Toolbar";
 import { EditorUser } from "../types";
 import { EditorInfo } from "./EditorInfo";
+import Share from "./Share";
+import { Button } from "antd";
 
 export interface EditorHeaderProps {
   isSidebarOpen?: boolean;
+  permission: "admin" | "write" | "read" | null;
   toggleSidebar?: () => void;
   editor: Editor;
   collabState: WebSocketStatus;
   users: EditorUser[];
+  setEditorShow: (show: boolean) => void;
 }
 
 function EditorHeader({
   editor,
+  permission,
   collabState,
   users,
   isSidebarOpen,
   toggleSidebar,
+  setEditorShow,
 }: EditorHeaderProps) {
   // const [isEditable, setIsEditable] = useState(true);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const { characters, words } = useEditorState({
     editor,
@@ -49,6 +56,12 @@ function EditorHeader({
         </div>
       </div>
       <div className="flex gap-x-3 items-center">
+        {permission === "admin" && (
+          <>
+            <Share type="popover" open={isShareOpen} onOpen={setIsShareOpen} />
+            <Button onClick={() => setEditorShow(false)}>历史记录</Button>
+          </>
+        )}
         <Toolbar.Button
           tooltip="撤销"
           disabled={!editor.can().undo()}
@@ -67,6 +80,7 @@ function EditorHeader({
         >
           <Icon name="Redo" />
         </Toolbar.Button>
+
         <EditorInfo
           characters={characters}
           words={words}

@@ -1,6 +1,10 @@
-import { Upload } from "antd";
+import { useState } from "react";
+import { message, Upload } from "antd";
+import { useNavigate } from "react-router-dom";
+import { UploadChangeParam } from "antd/es/upload";
 import { cn } from "@/utils";
 import { Icon } from "../ui/Icon";
+import { CreateSpaceModal } from "@/containers";
 import { useDocListStore, useDocLib } from "@/store";
 import "./index.css";
 
@@ -9,8 +13,22 @@ interface AddOrUploadProps {
   className?: string;
 }
 function AddOrUpload({ type, className }: AddOrUploadProps) {
-  const { docLibId } = useDocLib();
-  const { createRootDoc } = useDocListStore();
+  const navigate = useNavigate();
+  const { docLibId, setDocLibId } = useDocLib();
+  const { createRootDoc, fetchDocList } = useDocListStore();
+  const [open, setOpen] = useState(false);
+
+  const handleUploadChange = (info: UploadChangeParam) => {
+    if (info.file.status === "done") {
+      message.success(`${info.file.name} 上传成功`);
+      fetchDocList(setDocLibId);
+      navigate(info.file.response.data.url);
+    } else if (info.file.status === "error") {
+      message.error(
+        `${info.file.name} 上传失败: ${info.file.response?.message}`
+      );
+    }
+  };
 
   if (type === "addFile") {
     return (
@@ -36,6 +54,7 @@ function AddOrUpload({ type, className }: AddOrUploadProps) {
         showUploadList={false}
         name="markdown"
         action="http://localhost:5001/api/upload/markdown"
+        onChange={handleUploadChange}
         headers={{
           Authorization: `Bearer ${localStorage.getItem("token")!}`,
         }}
@@ -53,16 +72,22 @@ function AddOrUpload({ type, className }: AddOrUploadProps) {
     );
   } else {
     return (
-      <div className={cn("add-or-upload", className)}>
-        <div className="w-6 h-6 mr-3">
-          <Icon name="LibraryBig" className="w-6 h-6 text-addFile" />
-        </div>
+      <>
+        <div
+          className={cn("add-or-upload", className)}
+          onClick={() => setOpen(true)}
+        >
+          <div className="w-6 h-6 mr-3">
+            <Icon name="LibraryBig" className="w-6 h-6 text-addFile" />
+          </div>
 
-        <div style={{ flex: 1 }}>
-          <p>新建空间</p>
-          <p className="text-xs text-gray-500">让知识创造价值</p>
+          <div style={{ flex: 1 }}>
+            <p>新建空间</p>
+            <p className="text-xs text-gray-500">让知识创造价值</p>
+          </div>
         </div>
-      </div>
+        <CreateSpaceModal open={open} setOpen={setOpen} />
+      </>
     );
   }
 }

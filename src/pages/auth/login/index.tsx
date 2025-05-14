@@ -3,12 +3,13 @@ import { useRequest } from "ahooks";
 import { Form, Input, Space, Button, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import { captcha, login, LoginData } from "@/apis";
-import { useUserInfo } from "@/store";
+import { useUserInfo, useDocLib } from "@/store";
 import { Icon } from "@/components/ui/Icon";
 
 function Login() {
   const navigate = useNavigate();
   const { setUserInfo } = useUserInfo();
+  const { setDocLibId } = useDocLib();
   const [form] = Form.useForm();
   const [svg, setSvg] = useState("");
   const { run: getCaptcha } = useRequest(captcha, {
@@ -26,7 +27,9 @@ function Login() {
         username: res.data.username,
         avatar: res.data.avatar,
         email: res.data.email,
+        id: res.data.id,
       });
+      setDocLibId(res.data.defaultSpaceId!);
 
       navigate("/docs/f2c3fbc5-45bf-49b6-88eb-6a2449d1e247");
     },
@@ -48,9 +51,10 @@ function Login() {
   }, []);
   return (
     <div className="login-container">
-      <Form name="login" form={form}>
+      <Form name="login" form={form} onFinish={handleSubmit}>
         <Form.Item
           name="username"
+          required
           rules={[{ required: true, message: "请输入用户名" }]}
         >
           <Input
@@ -60,6 +64,7 @@ function Login() {
           />
         </Form.Item>
         <Form.Item
+          required
           name="password"
           rules={[{ required: true, message: "请输入密码" }]}
         >
@@ -87,12 +92,12 @@ function Login() {
             ></div>
           </Space>
         </Form.Item>
+        <Form.Item>
+          <Button type="primary" className="w-full" htmlType="submit">
+            登录
+          </Button>
+        </Form.Item>
       </Form>
-      <div className="login-footer">
-        <Button type="primary" onClick={handleSubmit}>
-          登陆
-        </Button>
-      </div>
     </div>
   );
 }

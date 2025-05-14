@@ -25,7 +25,6 @@ export const QuoteCaption = Node.create({
 
   addKeyboardShortcuts() {
     return {
-      // On Enter at the end of line, create new paragraph and focus
       Enter: ({ editor }) => {
         const {
           state: {
